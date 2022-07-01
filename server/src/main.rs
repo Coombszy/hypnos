@@ -45,6 +45,7 @@ async fn main() -> std::io::Result<()> {
                     start_time: Utc::now(),
                 }))
                 .service(libs::routes::health)
+                .service(libs::routes::test)
         })
         .bind((host, port))?
         .run()
