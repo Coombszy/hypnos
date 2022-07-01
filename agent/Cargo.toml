@@ -1,5 +1,5 @@
 [package]
-name = "hypnos-daemon"
+name = "hypnos-agent"
 version = "0.1.0"
 edition = "2021"
 authors = ["Coombszy <LCCoombs@hotmail.co.uk>"]
