@@ -11,6 +11,7 @@ authors = ["Coombszy <LCCoombs@hotmail.co.uk>"]
 hypnos-library = { path = "../lib" }
 # Configs
 dotenv = "0.15.0"
+toml = "0.5"
 # Logging
 log = "0.4.17"
 simplelog = "0.12"

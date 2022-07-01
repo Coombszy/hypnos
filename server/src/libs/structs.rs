@@ -1,5 +1,36 @@
 use chrono::{DateTime, Duration, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+
+// TOML Data on loaded on startup
+#[derive(Deserialize, Clone)]
+pub struct TOMLData {
+    pub config: Config,
+}
+
+// Config data stored within TOML Data
+#[derive(Deserialize, Serialize, Clone)]
+pub struct Config {
+    pub schedule_enabled: bool,
+    pub schedule_source: String,
+    pub web_enabled: bool,
+    pub web_host: String,
+    pub web_port: u16,
+    pub write_logs: bool,
+    pub write_logs_file: String,
+}
+
+// Implement functionality for Config struct
+impl Config {
+    // Returns struct as JSON
+    pub fn display(&self) -> String {
+        serde_json::to_string(self).unwrap()
+    }
+
+    // Returns struct as pretty JSON
+    pub fn display_pretty(&self) -> String {
+        serde_json::to_string_pretty(self).unwrap()
+    }
+}
 
 // Actix Application global state
 pub struct State {
