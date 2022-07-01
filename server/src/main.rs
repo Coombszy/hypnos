@@ -1,4 +1,4 @@
-use hypnos_library::draw_start_screen;
+use hypnos_library::{draw_start_screen, structs::CargoPkgInfo};
 
 mod libs;
 use libs::structs::{State, TOMLData};
@@ -60,7 +60,11 @@ async fn main() -> std::io::Result<()> {
 }
 
 fn startup() -> TOMLData {
-    draw_start_screen(&env!("CARGO_PKG_NAME").to_string());
+    draw_start_screen(&CargoPkgInfo {
+        name: env!("CARGO_PKG_NAME").to_string(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        authors: env!("CARGO_PKG_AUTHORS").to_string(),
+    });
 
     // Init environment vars from .env file
     dotenv().ok();
