@@ -1,2 +1,8 @@
+Cargo.lock
+
 # Do not include application output binary
 hypnos
+
+
+# Added by cargo
+/target
