@@ -1,4 +1,5 @@
 use chrono::{DateTime, Duration, Utc};
+use hex::FromHex;
 use serde::{Deserialize, Serialize};
 
 // TOML Data on loaded on startup
@@ -50,8 +51,42 @@ impl State {
     }
 }
 
-// Web reoute 'health' response body
+// Web route 'health' response body
 #[derive(Serialize)]
 pub struct WebHealth {
     pub uptime: String,
+}
+
+// Reponse error
+#[derive(Serialize)]
+pub struct WebError {
+    pub timestamp: String,
+    pub error: String,
+}
+
+// State enums
+#[derive(Deserialize, Serialize, Clone)]
+pub enum TargetState {
+    Off,
+    On,
+}
+
+// System State,
+#[derive(Deserialize, Serialize, Clone)]
+pub struct SysState {
+    pub mac_address: String,
+    pub target_state: TargetState,
+}
+
+impl SysState {
+    // Convert mac address string to a hex array
+    pub fn get_mac_address(&self) -> [u8; 6] {
+        // If contains ":", remove
+        if self.mac_address.contains(":") {
+            return <[u8; 6]>::from_hex(&self.mac_address.replace(":", ""))
+                .expect("Decoding failed");
+        }
+
+        return <[u8; 6]>::from_hex(&self.mac_address).expect("Decoding failed");
+    }
 }

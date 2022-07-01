@@ -1,8 +1,14 @@
-
 use actix_web::{error, get, post, web, Error, HttpResponse};
+use chrono::Utc;
+use futures_util::StreamExt as _;
 use log::{debug, error};
 
-use crate::libs::{structs::{State, WebHealth}, utils::send_magic_packet};
+use crate::libs::{
+    structs::{State, SysState, WebError, WebHealth},
+    utils::send_magic_packet,
+};
+
+use super::structs::TargetState;
 
 const MAX_PAYLOAD_SIZE: usize = 262_144; // Max size of 256k
 
@@ -16,15 +22,39 @@ async fn health(data: web::Data<State>) -> HttpResponse {
         })
 }
 
-#[get("/test")]
-async fn test(data: web::Data<State>) -> HttpResponse {
-    error!("TEST HIT! Booting temp test");
+#[post("/state")]
+async fn set_state(
+    data: web::Data<State>,
+    mut payload: web::Payload,
+) -> Result<HttpResponse, Error> {
+    debug!("Status request received");
 
-    send_magic_packet(&[0x00, 0x23, 0x24, 0x82, 0x10, 0x46]);
+    // Convert payload stream into useful object
+    let mut body = web::BytesMut::new();
+    while let Some(chunk) = payload.next().await {
+        let chunk = chunk?;
+        if (body.len() + chunk.len()) > MAX_PAYLOAD_SIZE {
+            return Err(error::ErrorBadRequest("payload overflow"));
+        }
+        body.extend_from_slice(&chunk);
+    }
 
-    HttpResponse::Ok()
-        .content_type("application/json")
-        .json(WebHealth {
-            uptime: data.uptime(),
-        })
+    let state = match serde_json::from_slice::<SysState>(&body) {
+        Ok(n) => n,
+        Err(e) => {
+            return Ok(HttpResponse::BadRequest()
+                .content_type("application/json")
+                .json(WebError {
+                    timestamp: Utc::now().to_rfc3339(),
+                    error: format!("failed to parse json. {}", e),
+                }));
+        }
+    };
+
+    match state.target_state {
+        TargetState::On => send_magic_packet(&state.get_mac_address())?,
+        TargetState::Off => println!("NOT IMPL"),
+    }
+
+    Ok(HttpResponse::NoContent().finish())
 }
