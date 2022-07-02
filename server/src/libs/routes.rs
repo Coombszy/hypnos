@@ -1,14 +1,13 @@
-use actix_web::{error, get, post, web, Error, HttpResponse};
+use actix_web::{error, get, post, web, Error, HttpResponse, App};
 use chrono::Utc;
 use futures_util::StreamExt as _;
+use hypnos_library::structs::{TargetState, SysState};
 use log::{debug, error};
 
 use crate::libs::{
-    structs::{AppState, SysState, WebError, WebHealth},
+    structs::{AppState, WebError, WebHealth},
     utils::send_magic_packet,
 };
-
-use super::structs::TargetState;
 
 const MAX_PAYLOAD_SIZE: usize = 262_144; // Max size of 256k
 
@@ -53,8 +52,27 @@ async fn set_state(
 
     match state.target_state {
         TargetState::On => send_magic_packet(&state.get_mac_address())?,
-        TargetState::Off => println!("NOT IMPL"),
+        TargetState::Off => push_new_state(data, state),
     }
 
     Ok(HttpResponse::NoContent().finish())
 }
+
+fn push_new_state(data: web::Data<AppState>, payload_state: SysState) {
+    let mut states = data.pending_states.lock().unwrap();
+    states.push(payload_state);
+
+}
+
+#[get("/states")]
+async fn get_states(
+    data: web::Data<AppState>
+) -> HttpResponse {
+
+    let states = data.pending_states.lock().unwrap();
+
+    HttpResponse::Ok()
+        .content_type("application/json")
+        .json(states.clone())
+}
+

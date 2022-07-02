@@ -1,5 +1,8 @@
+use std::sync::{Arc, Mutex};
+
 use chrono::{DateTime, Duration, Utc};
 use hex::FromHex;
+use hypnos_library::structs::SysState;
 use serde::{Deserialize, Serialize};
 
 // TOML Data on loaded on startup
@@ -36,6 +39,7 @@ impl Config {
 // Actix Application global state
 pub struct AppState {
     pub start_time: DateTime<Utc>,
+    pub pending_states: Arc<Mutex<Vec<SysState>>>,
 }
 // Global state impls
 impl AppState {
@@ -62,31 +66,4 @@ pub struct WebHealth {
 pub struct WebError {
     pub timestamp: String,
     pub error: String,
-}
-
-// State enums
-#[derive(Deserialize, Serialize, Clone)]
-pub enum TargetState {
-    Off,
-    On,
-}
-
-// System State,
-#[derive(Deserialize, Serialize, Clone)]
-pub struct SysState {
-    pub mac_address: String,
-    pub target_state: TargetState,
-}
-
-impl SysState {
-    // Convert mac address string to a hex array
-    pub fn get_mac_address(&self) -> [u8; 6] {
-        // If contains ":", remove
-        if self.mac_address.contains(":") {
-            return <[u8; 6]>::from_hex(&self.mac_address.replace(":", ""))
-                .expect("Decoding failed");
-        }
-
-        return <[u8; 6]>::from_hex(&self.mac_address).expect("Decoding failed");
-    }
 }

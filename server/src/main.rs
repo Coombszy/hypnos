@@ -1,3 +1,4 @@
+use hypnos_library::structs::SysState;
 use hypnos_library::{draw_start_screen, structs::CargoPkgInfo};
 
 mod libs;
@@ -10,9 +11,8 @@ use log::{debug, error, info, LevelFilter};
 use simplelog::*;
 
 use std::fs::File;
-use std::process::exit;
 use std::sync::{Arc, Mutex};
-use std::thread;
+use std::{thread, vec};
 use std::time::Duration;
 use std::{env, str::FromStr};
 
@@ -34,6 +34,9 @@ async fn main() -> std::io::Result<()> {
     //     notification_scheduler(&notifications, toml_data.config.clone());
     // }
 
+    // Create State change collection
+    let pending_states = Arc::new(Mutex::new(Vec::<SysState>::new()));
+
     // Start Web
     if toml_data.config.web_enabled {
         let host: String = toml_data.clone().config.web_host;
@@ -43,9 +46,11 @@ async fn main() -> std::io::Result<()> {
             App::new()
                 .app_data(web::Data::new(AppState {
                     start_time: Utc::now(),
+                    pending_states: pending_states.clone(),
                 }))
                 .service(libs::routes::health)
                 .service(libs::routes::set_state)
+                .service(libs::routes::get_states)
         })
         .bind((host, port))?
         .run()
@@ -111,11 +116,6 @@ fn startup() -> TOMLData {
 
     // Config validation
     debug!("Config loaded:\n{}", toml_data.config.display_pretty());
-    // Do not start with Scheduled and Web disabled
-    if !(toml_data.config.schedule_enabled) && !(toml_data.config.web_enabled) {
-        error!("Scheduled and Web notifications cannot both be disabled!");
-        exit(1);
-    }
 
     toml_data
 }
