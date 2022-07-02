@@ -4,7 +4,7 @@ use futures_util::StreamExt as _;
 use log::{debug, error};
 
 use crate::libs::{
-    structs::{State, SysState, WebError, WebHealth},
+    structs::{AppState, SysState, WebError, WebHealth},
     utils::send_magic_packet,
 };
 
@@ -13,7 +13,7 @@ use super::structs::TargetState;
 const MAX_PAYLOAD_SIZE: usize = 262_144; // Max size of 256k
 
 #[get("/health")]
-async fn health(data: web::Data<State>) -> HttpResponse {
+async fn health(data: web::Data<AppState>) -> HttpResponse {
     debug!("Health request received");
     HttpResponse::Ok()
         .content_type("application/json")
@@ -24,7 +24,7 @@ async fn health(data: web::Data<State>) -> HttpResponse {
 
 #[post("/state")]
 async fn set_state(
-    data: web::Data<State>,
+    data: web::Data<AppState>,
     mut payload: web::Payload,
 ) -> Result<HttpResponse, Error> {
     debug!("Status request received");

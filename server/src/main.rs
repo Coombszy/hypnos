@@ -1,7 +1,7 @@
 use hypnos_library::{draw_start_screen, structs::CargoPkgInfo};
 
 mod libs;
-use libs::structs::{State, TOMLData};
+use libs::structs::{AppState, TOMLData};
 
 use actix_web::{web, App, HttpServer};
 use chrono::Utc;
@@ -41,7 +41,7 @@ async fn main() -> std::io::Result<()> {
         info!("Starting web server, listening on {host}:{port}");
         HttpServer::new(move || {
             App::new()
-                .app_data(web::Data::new(State {
+                .app_data(web::Data::new(AppState {
                     start_time: Utc::now(),
                 }))
                 .service(libs::routes::health)

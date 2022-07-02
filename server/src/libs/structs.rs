@@ -34,11 +34,11 @@ impl Config {
 }
 
 // Actix Application global state
-pub struct State {
+pub struct AppState {
     pub start_time: DateTime<Utc>,
 }
 // Global state impls
-impl State {
+impl AppState {
     // Returns current uptime using `start_time`
     pub fn uptime(&self) -> String {
         let duration: Duration = Utc::now() - self.start_time;
