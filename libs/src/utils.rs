@@ -1,5 +1,7 @@
+use std::error::Error;
+
 use crate::structs::CargoPkgInfo;
-use hex::FromHex;
+use hex::{FromHex, FromHexError};
 
 // Draws start screen containing app version and ascii
 pub fn draw_start_screen(package_info: &CargoPkgInfo) {
@@ -17,12 +19,11 @@ pub fn draw_start_screen(package_info: &CargoPkgInfo) {
     println!("==================================================")
 }
 
-pub fn generic_mac_address(mac_address: &String) -> [u8; 6] {
+pub fn generic_mac_address(mac_address: &String) -> Result<[u8; 6], FromHexError> {
     // If contains ":", remove
     if mac_address.contains(":") {
-        return <[u8; 6]>::from_hex(mac_address.replace(":", ""))
-            .expect("Decoding failed");
+        return Ok(<[u8; 6]>::from_hex(mac_address.replace(":", ""))?);
     }
 
-    return <[u8; 6]>::from_hex(mac_address).expect("Decoding failed");
+    return Ok(<[u8; 6]>::from_hex(mac_address)?);
 }

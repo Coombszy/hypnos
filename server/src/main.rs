@@ -49,6 +49,7 @@ async fn main() -> std::io::Result<()> {
             .service(libs::routes::health)
             .service(libs::routes::set_state)
             .service(libs::routes::get_states)
+            .service(libs::routes::fetch_state)
     })
     .bind((host, port))?
     .run()

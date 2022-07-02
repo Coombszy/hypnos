@@ -1,3 +1,4 @@
+use hex::FromHexError;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::generic_mac_address;
@@ -24,13 +25,13 @@ pub struct SysState {
 
 impl SysState {
     // Convert mac address string to a hex array
-    pub fn get_mac_address(&self) -> [u8; 6] {
+    pub fn get_mac_address(&self) -> Result<[u8; 6], FromHexError> {
         return generic_mac_address(&self.mac_address);
     }
 }
 
 // State query from agent
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct StateQuery {
     pub mac_addresses: Vec<String>,
 }
