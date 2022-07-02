@@ -1,5 +1,6 @@
-use hex::FromHex;
 use serde::{Deserialize, Serialize};
+
+use crate::utils::generic_mac_address;
 
 pub struct CargoPkgInfo {
     pub name: String,
@@ -24,12 +25,12 @@ pub struct SysState {
 impl SysState {
     // Convert mac address string to a hex array
     pub fn get_mac_address(&self) -> [u8; 6] {
-        // If contains ":", remove
-        if self.mac_address.contains(":") {
-            return <[u8; 6]>::from_hex(&self.mac_address.replace(":", ""))
-                .expect("Decoding failed");
-        }
-
-        return <[u8; 6]>::from_hex(&self.mac_address).expect("Decoding failed");
+        return generic_mac_address(&self.mac_address);
     }
+}
+
+// State query from agent
+#[derive(Deserialize)]
+pub struct StateQuery {
+    pub mac_addresses: Vec<String>,
 }

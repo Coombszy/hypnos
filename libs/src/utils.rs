@@ -1,4 +1,5 @@
 use crate::structs::CargoPkgInfo;
+use hex::FromHex;
 
 // Draws start screen containing app version and ascii
 pub fn draw_start_screen(package_info: &CargoPkgInfo) {
@@ -14,4 +15,14 @@ pub fn draw_start_screen(package_info: &CargoPkgInfo) {
     println!("{}{}", " ".repeat(offset), package_info.name);
     println!("\n   Created by {}", package_info.authors);
     println!("==================================================")
+}
+
+pub fn generic_mac_address(mac_address: &String) -> [u8; 6] {
+    // If contains ":", remove
+    if mac_address.contains(":") {
+        return <[u8; 6]>::from_hex(mac_address.replace(":", ""))
+            .expect("Decoding failed");
+    }
+
+    return <[u8; 6]>::from_hex(mac_address).expect("Decoding failed");
 }
