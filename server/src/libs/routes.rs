@@ -1,7 +1,7 @@
-use actix_web::{error, get, post, web, Error, HttpResponse, App};
+use actix_web::{error, get, post, web, App, Error, HttpResponse};
 use chrono::Utc;
 use futures_util::StreamExt as _;
-use hypnos_library::structs::{TargetState, SysState};
+use hypnos_library::structs::{SysState, TargetState};
 use log::{debug, error};
 
 use crate::libs::{
@@ -61,18 +61,13 @@ async fn set_state(
 fn push_new_state(data: web::Data<AppState>, payload_state: SysState) {
     let mut states = data.pending_states.lock().unwrap();
     states.push(payload_state);
-
 }
 
 #[get("/states")]
-async fn get_states(
-    data: web::Data<AppState>
-) -> HttpResponse {
-
+async fn get_states(data: web::Data<AppState>) -> HttpResponse {
     let states = data.pending_states.lock().unwrap();
 
     HttpResponse::Ok()
         .content_type("application/json")
         .json(states.clone())
 }
-

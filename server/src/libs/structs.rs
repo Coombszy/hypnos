@@ -1,7 +1,6 @@
 use std::sync::{Arc, Mutex};
 
 use chrono::{DateTime, Duration, Utc};
-use hex::FromHex;
 use hypnos_library::structs::SysState;
 use serde::{Deserialize, Serialize};
 
@@ -16,7 +15,6 @@ pub struct TOMLData {
 pub struct Config {
     pub schedule_enabled: bool,
     pub schedule_source: String,
-    pub web_enabled: bool,
     pub web_host: String,
     pub web_port: u16,
     pub write_logs: bool,

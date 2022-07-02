@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use hex::FromHex;
+use serde::{Deserialize, Serialize};
 
 pub struct CargoPkgInfo {
     pub name: String,

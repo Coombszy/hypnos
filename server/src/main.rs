@@ -1,5 +1,5 @@
-use hypnos_library::structs::SysState;
-use hypnos_library::{draw_start_screen, structs::CargoPkgInfo};
+use hypnos_library::structs::{CargoPkgInfo, SysState};
+use hypnos_library::utils::draw_start_screen;
 
 mod libs;
 use libs::structs::{AppState, TOMLData};
@@ -12,9 +12,8 @@ use simplelog::*;
 
 use std::fs::File;
 use std::sync::{Arc, Mutex};
-use std::{thread, vec};
-use std::time::Duration;
 use std::{env, str::FromStr};
+use std::{thread, vec};
 
 use crate::libs::utils::load_config_toml;
 
@@ -38,30 +37,22 @@ async fn main() -> std::io::Result<()> {
     let pending_states = Arc::new(Mutex::new(Vec::<SysState>::new()));
 
     // Start Web
-    if toml_data.config.web_enabled {
-        let host: String = toml_data.clone().config.web_host;
-        let port: u16 = toml_data.clone().config.web_port;
-        info!("Starting web server, listening on {host}:{port}");
-        HttpServer::new(move || {
-            App::new()
-                .app_data(web::Data::new(AppState {
-                    start_time: Utc::now(),
-                    pending_states: pending_states.clone(),
-                }))
-                .service(libs::routes::health)
-                .service(libs::routes::set_state)
-                .service(libs::routes::get_states)
-        })
-        .bind((host, port))?
-        .run()
-        .await
-    }
-    // Keep app alive
-    else {
-        loop {
-            thread::sleep(Duration::from_secs(10));
-        }
-    }
+    let host: String = toml_data.clone().config.web_host;
+    let port: u16 = toml_data.clone().config.web_port;
+    info!("Starting web server, listening on {host}:{port}");
+    HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(AppState {
+                start_time: Utc::now(),
+                pending_states: pending_states.clone(),
+            }))
+            .service(libs::routes::health)
+            .service(libs::routes::set_state)
+            .service(libs::routes::get_states)
+    })
+    .bind((host, port))?
+    .run()
+    .await
 }
 
 fn startup() -> TOMLData {

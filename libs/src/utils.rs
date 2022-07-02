@@ -1,5 +1,4 @@
-pub mod structs;
-use structs::CargoPkgInfo;
+use crate::structs::CargoPkgInfo;
 
 // Draws start screen containing app version and ascii
 pub fn draw_start_screen(package_info: &CargoPkgInfo) {
@@ -8,7 +7,7 @@ pub fn draw_start_screen(package_info: &CargoPkgInfo) {
     | |_| | | | | '_ \| '_ \ / _ \/ __|
     |  _  | |_| | |_) | | | | (_) \__ \
     |_| |_|\__, | .__/|_| |_|\___/|___/
-            |___/|_|                    "#;
+           |___/|_|                    "#;
 
     let offset = 47 - package_info.name.len();
     println!("{} v{}", &ascii_name, package_info.version);

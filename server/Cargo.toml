@@ -8,7 +8,7 @@ authors = ["Coombszy <LCCoombs@hotmail.co.uk>"]
 
 [dependencies]
 # Hypnos lib
-hypnos-library = { path = "../lib" }
+hypnos-library = { path = "../libs" }
 # Configs
 dotenv = "0.15.0"
 toml = "0.5"

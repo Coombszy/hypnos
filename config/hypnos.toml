@@ -6,10 +6,8 @@ schedule_enabled = true
 schedule_source = "./data/schedule.json"
 
 # Web Server control
-# web_enabled: enable web server to trigger state changes on demand.
 # web_host: ip address to listen on.
 # web_port: port to listen on.
-web_enabled = true
 web_host = "0.0.0.0"
 web_port = 8080
 
