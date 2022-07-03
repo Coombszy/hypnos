@@ -11,8 +11,8 @@ pub fn load_config_toml(filename: String) -> TOMLData {
         Ok(c) => c,
         // Failed to read file
         Err(e) => {
-            error!("Could not read TOML file '{}'", &filename);
-            error!("Error: {}", e);
+            println!("Could not read TOML file '{}'", &filename);
+            println!("Error: {}", e);
             exit(1);
         }
     };
@@ -21,8 +21,8 @@ pub fn load_config_toml(filename: String) -> TOMLData {
         Ok(d) => d,
         // Failed to parse from String to TOMLData Struct
         Err(e) => {
-            error!("Unable to load data from {}", &filename);
-            error!("Error: {}", e);
+            println!("Unable to load data from {}", &filename);
+            println!("Error: {}", e);
             exit(1);
         }
     };
