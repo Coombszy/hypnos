@@ -26,7 +26,7 @@ pub struct SysState {
 impl SysState {
     // Convert mac address string to a hex array
     pub fn get_mac_address(&self) -> Result<[u8; 6], FromHexError> {
-        return generic_mac_address(&self.mac_address);
+        generic_mac_address(&self.mac_address)
     }
 }
 

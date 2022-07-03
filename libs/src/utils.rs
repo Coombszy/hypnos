@@ -1,4 +1,4 @@
-use std::error::Error;
+
 
 use crate::structs::CargoPkgInfo;
 use hex::{FromHex, FromHexError};
@@ -21,9 +21,9 @@ pub fn draw_start_screen(package_info: &CargoPkgInfo) {
 
 pub fn generic_mac_address(mac_address: &String) -> Result<[u8; 6], FromHexError> {
     // If contains ":", remove
-    if mac_address.contains(":") {
-        return Ok(<[u8; 6]>::from_hex(mac_address.replace(":", ""))?);
+    if mac_address.contains(':') {
+        return <[u8; 6]>::from_hex(mac_address.replace(':', ""));
     }
 
-    return Ok(<[u8; 6]>::from_hex(mac_address)?);
+    <[u8; 6]>::from_hex(mac_address)
 }

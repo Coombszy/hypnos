@@ -7,13 +7,13 @@ use libs::structs::{AppState, TOMLData};
 use actix_web::{web, App, HttpServer};
 use chrono::Utc;
 use dotenv::dotenv;
-use log::{debug, error, info, LevelFilter};
+use log::{debug, info, LevelFilter};
 use simplelog::*;
 
 use std::fs::File;
 use std::sync::{Arc, Mutex};
 use std::{env, str::FromStr};
-use std::{thread, vec};
+use std::{vec};
 
 use crate::libs::utils::load_config_toml;
 

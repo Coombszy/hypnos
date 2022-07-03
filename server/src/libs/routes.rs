@@ -1,7 +1,6 @@
 use actix_web::{
     error, get, post,
-    web::{self, Query},
-    App, Error, HttpResponse,
+    web::{self}, Error, HttpResponse,
 };
 use chrono::Utc;
 use futures_util::StreamExt as _;
@@ -9,7 +8,7 @@ use hypnos_library::{
     structs::{StateQuery, SysState, TargetState},
     utils::generic_mac_address,
 };
-use log::{debug, error};
+use log::{debug};
 
 use crate::libs::{
     structs::{AppState, WebError, WebHealth},
