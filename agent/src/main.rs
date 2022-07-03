@@ -10,6 +10,8 @@ fn main() {
 
     println!("{}", args.server);
 
+    
+
     // match shutdown() {
     //     Ok(_) => println!("Shutting down!"),
     //     Err(error) => eprintln!("Failed to shutdown: {}", error),
