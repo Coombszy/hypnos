@@ -1,5 +1,3 @@
-
-
 use crate::structs::CargoPkgInfo;
 use hex::{FromHex, FromHexError};
 

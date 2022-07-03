@@ -12,8 +12,8 @@ use simplelog::*;
 
 use std::fs::File;
 use std::sync::{Arc, Mutex};
+use std::vec;
 use std::{env, str::FromStr};
-use std::{vec};
 
 use crate::libs::utils::load_config_toml;
 
