@@ -1,7 +1,14 @@
-use actix_web::{error, get, post, web::{self, Query}, App, Error, HttpResponse};
+use actix_web::{
+    error, get, post,
+    web::{self, Query},
+    App, Error, HttpResponse,
+};
 use chrono::Utc;
 use futures_util::StreamExt as _;
-use hypnos_library::{structs::{SysState, TargetState, StateQuery}, utils::generic_mac_address};
+use hypnos_library::{
+    structs::{StateQuery, SysState, TargetState},
+    utils::generic_mac_address,
+};
 use log::{debug, error};
 
 use crate::libs::{
@@ -74,8 +81,10 @@ async fn get_states(data: web::Data<AppState>) -> HttpResponse {
 }
 
 #[post("/query_state")]
-async fn fetch_state(data: web::Data<AppState>, mut payload: web::Payload) -> Result<HttpResponse, Error> {
-
+async fn fetch_state(
+    data: web::Data<AppState>,
+    mut payload: web::Payload,
+) -> Result<HttpResponse, Error> {
     debug!("State fetch request received");
 
     // Convert payload stream into useful object
@@ -117,7 +126,7 @@ async fn fetch_state(data: web::Data<AppState>, mut payload: web::Payload) -> Re
     // Reverse state_cleanup list to resolve indexing issues due to shifting indexes
     state_cleanup.reverse();
     // If state found, cleanup and respond
-    if state_cleanup.len() > 0 && return_state.is_some(){
+    if state_cleanup.len() > 0 && return_state.is_some() {
         for target in state_cleanup {
             states.remove(target);
         }
