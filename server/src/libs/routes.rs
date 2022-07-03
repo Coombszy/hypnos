@@ -126,7 +126,7 @@ async fn fetch_state(
     // Reverse state_cleanup list to resolve indexing issues due to shifting indexes
     state_cleanup.reverse();
     // If state found, cleanup and respond
-    if state_cleanup.len() > 0 && return_state.is_some() {
+    if !state_cleanup.is_empty() && return_state.is_some() {
         for target in state_cleanup {
             states.remove(target);
         }
