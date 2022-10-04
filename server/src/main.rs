@@ -23,16 +23,6 @@ const DATA_FOLDER: &str = "config/";
 async fn main() -> std::io::Result<()> {
     let toml_data: TOMLData = startup();
 
-    // Load Notifications
-    // if toml_data.config.schedule_enabled {
-    //     let notifications: Vec<Notification> =
-    //         load_notifications(&toml_data.config.schedule_source);
-    //     info!("Notifications loaded: {}", notifications.len());
-
-    //     // Create scheduled notifications
-    //     notification_scheduler(&notifications, toml_data.config.clone());
-    // }
-
     // Create State change collection
     let pending_states = Arc::new(Mutex::new(Vec::<SysState>::new()));
 

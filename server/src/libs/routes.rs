@@ -80,46 +80,24 @@ async fn get_states(data: web::Data<AppState>) -> HttpResponse {
         .json(states.clone())
 }
 
-#[post("/query_state")]
+#[get("/query_state/{mac_address}")]
 async fn fetch_state(
     data: web::Data<AppState>,
-    mut payload: web::Payload,
+    path: web::Path<String>
 ) -> Result<HttpResponse, Error> {
     debug!("State fetch request received");
-
-    // Convert payload stream into useful object
-    let mut body = web::BytesMut::new();
-    while let Some(chunk) = payload.next().await {
-        let chunk = chunk?;
-        if (body.len() + chunk.len()) > MAX_PAYLOAD_SIZE {
-            return Err(error::ErrorBadRequest("payload overflow"));
-        }
-        body.extend_from_slice(&chunk);
-    }
-
-    let state_query = match serde_json::from_slice::<StateQuery>(&body) {
-        Ok(n) => n,
-        Err(e) => {
-            return Ok(HttpResponse::BadRequest()
-                .content_type("application/json")
-                .json(WebError {
-                    timestamp: Utc::now().to_rfc3339(),
-                    error: format!("failed to parse json. {}", e),
-                }));
-        }
-    };
 
     let mut state_cleanup = Vec::<usize>::new();
     let mut states = data.pending_states.lock().unwrap();
     let mut return_state: Option<SysState> = None;
 
+    let mac_query = path.into_inner();
+
     // Get state to return and a list of states to cleanup
-    for mac_address in &state_query.mac_addresses {
-        for (i, state) in states.iter().enumerate() {
-            if state.get_mac_address() == generic_mac_address(mac_address) {
-                state_cleanup.push(i);
-                return_state = Some(state.clone());
-            }
+    for (i, state) in states.iter().enumerate() {
+        if state.get_mac_address() == generic_mac_address(&mac_query) {
+            state_cleanup.push(i);
+            return_state = Some(state.clone());
         }
     }
 
