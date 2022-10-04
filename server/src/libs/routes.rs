@@ -69,9 +69,7 @@ fn push_new_state(data: web::Data<AppState>, payload_state: SysState) {
     let mut states = data.pending_states.lock().unwrap();
 
     // Remove existing states with the same mac address
-    states.retain(| state | {
-        state.mac_address != payload_state.mac_address
-    });
+    states.retain(|state| state.mac_address != payload_state.mac_address);
 
     // TODO: This needs validation
     states.push(payload_state);
@@ -89,7 +87,7 @@ async fn get_states(data: web::Data<AppState>) -> HttpResponse {
 #[get("/query_state/{mac_address}")]
 async fn fetch_state(
     data: web::Data<AppState>,
-    path: web::Path<String>
+    path: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
     debug!("State fetch request received");
 

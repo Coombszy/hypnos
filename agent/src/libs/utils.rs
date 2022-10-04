@@ -5,11 +5,11 @@ pub async fn fetch_state(server: &String) -> Result<Option<SysState>, Box<dyn st
     let response = reqwest::get(server).await;
 
     match response {
-        Ok(r)=> {
+        Ok(r) => {
             if r.status() == reqwest::StatusCode::OK {
                 // This *should* always parse
                 let state: SysState = r.json().await.unwrap();
-                return Ok(Some(state))
+                return Ok(Some(state));
             }
             Ok(None)
         }
@@ -27,10 +27,10 @@ pub async fn is_alive(server: &String) -> bool {
     let response = reqwest::get(server).await;
 
     match response {
-        Ok(r)=> {
+        Ok(r) => {
             if r.status() == reqwest::StatusCode::OK {
                 // This *should* always parse
-                return true
+                return true;
             }
             println!("\nServer did not respond healthily ({})", r.status());
             false
