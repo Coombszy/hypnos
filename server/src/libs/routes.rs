@@ -6,7 +6,7 @@ use actix_web::{
 use chrono::Utc;
 use futures_util::StreamExt as _;
 use hypnos_library::{
-    structs::{StateQuery, SysState, TargetState},
+    structs::{SysState, TargetState},
     utils::generic_mac_address,
 };
 use log::debug;

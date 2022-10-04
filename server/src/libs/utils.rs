@@ -1,7 +1,5 @@
 use std::{fs, process::exit};
 
-use log::error;
-
 use crate::libs::structs::TOMLData;
 
 // Loads TOMLData struct from filename
