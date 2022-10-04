@@ -10,14 +10,14 @@ pub struct CargoPkgInfo {
 }
 
 // State enums
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub enum TargetState {
     Off,
     On,
 }
 
 // System State,
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct SysState {
     pub mac_address: String,
     pub target_state: TargetState,
