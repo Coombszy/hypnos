@@ -1,6 +1,6 @@
 use std::{
     io::Error,
-    process::{exit, Command, ExitStatus, Output},
+    process::{exit, Command, Output},
     str::from_utf8,
 };
 
