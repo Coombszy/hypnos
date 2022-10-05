@@ -1,11 +1,11 @@
 use clap::Parser;
 use hypnos_library::structs::{SysState, TargetState};
+use hypnos_library::utils::{fetch_state, is_alive};
 use std::{process::exit, thread, time::Duration};
 use system_shutdown::shutdown;
 
 mod libs;
 use libs::structs::Args;
-use libs::utils::{fetch_state, is_alive};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
