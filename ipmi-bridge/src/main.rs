@@ -1,11 +1,11 @@
-use clap::Parser;
+use clap::{Parser, Arg};
 use hypnos_library::structs::{SysState, TargetState};
-use hypnos_library::utils::{fetch_state, query_state, is_alive};
+use hypnos_library::utils::{fetch_state, is_alive, query_state};
 use std::{process::exit, thread, time::Duration};
-use system_shutdown::shutdown;
 
 mod libs;
 use libs::structs::Args;
+use libs::utils::{ipmi_start, ipmi_soft_stop};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     let health_ep = format!("{}/health", args.server);
 
-    print!("Starting agent...");
+    print!("Starting bridge...");
     if is_alive(&health_ep).await {
         println!("Running!");
     } else {
@@ -41,9 +41,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(r) => match r {
                 // State to ingest was found!
                 Some(state) => {
-                    // If not in the list of states that should be ingested, do nothing
                     if conditional_states(&state) {
-                        handle_state(&fetch_state(&fetch_ep).await.unwrap().unwrap());
+                        handle_state(&fetch_state(&fetch_ep).await.unwrap().unwrap(), &args);
                     }
                 }
                 // No state to ingest
@@ -64,33 +63,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 // Whether or not this app should handle this state
 fn conditional_states(state: &SysState) -> bool {
     match &state.target_state {
-        TargetState::AgentOff => true,
+        TargetState::IpmiOff => true,
+        TargetState::IpmiOn => true,
         _ => false
     }
 }
 
 // Handle State changes, All new states must be implemented here in the future
-fn handle_state(state: &SysState) {
+fn handle_state(state: &SysState, args: &Args) {
     match &state.target_state {
-        TargetState::AgentOff => shutdown().unwrap(),
+        TargetState::IpmiOff => ipmi_soft_stop(&args.ipmi_user, &args.ipmi_password, &args.ipmi_ip),
+        TargetState::IpmiOn => ipmi_start(&args.ipmi_user, &args.ipmi_password, &args.ipmi_ip),
         _ => println!("How did this happen! {:?} State should never enter the Queue!", &state.target_state),
     }
 }
 
 fn startup() {
-    // Permissions check and attempt to escalate
-    if sudo::check() != sudo::RunningAs::Root {
-        println!("Hypnos agent needs to be running as root to control the machine power state. Attempting to escalate...");
-        let escalate_result = sudo::escalate_if_needed();
-        match escalate_result {
-            Ok(_) => (),
-            Err(_) => {
-                println!("Failed to escalate");
-                exit(1);
-            }
-        }
-    }
-
     println!(
         "{} ({}) By {}",
         env!("CARGO_PKG_NAME"),

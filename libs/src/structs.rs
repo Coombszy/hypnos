@@ -12,8 +12,10 @@ pub struct CargoPkgInfo {
 // State enums
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub enum TargetState {
-    Off,
-    On,
+    AgentOff,
+    WolOn,
+    IpmiOn,
+    IpmiOff
 }
 
 // System State,

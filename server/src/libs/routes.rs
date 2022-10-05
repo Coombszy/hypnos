@@ -58,8 +58,8 @@ async fn set_state(
     };
 
     match state.target_state {
-        TargetState::On => send_magic_packet(&state.get_mac_address().unwrap())?,
-        TargetState::Off => push_new_state(data, state),
+        TargetState::WolOn => send_magic_packet(&state.get_mac_address().unwrap())?,
+        _ => push_new_state(data, state),
     }
 
     Ok(HttpResponse::NoContent().finish())
@@ -85,6 +85,36 @@ async fn get_states(data: web::Data<AppState>) -> HttpResponse {
 }
 
 #[get("/query_state/{mac_address}")]
+async fn query_state(
+    data: web::Data<AppState>,
+    path: web::Path<String>,
+) -> Result<HttpResponse, Error> {
+    debug!("State query request received");
+
+    let states = data.pending_states.lock().unwrap();
+    let mut return_state: Option<SysState> = None;
+
+    let mac_query = path.into_inner();
+
+    // Get state to return and a list of states to cleanup
+    for state in states.iter() {
+        if state.get_mac_address() == generic_mac_address(&mac_query) {
+            return_state = Some(state.clone());
+        }
+    }
+
+    // Reverse state_cleanup list to resolve indexing issues due to shifting indexes
+    // If state found, cleanup and respond
+    if return_state.is_some() {
+        Ok(HttpResponse::Ok()
+            .content_type("application/json")
+            .json(return_state.unwrap()))
+    } else {
+        Ok(HttpResponse::NoContent().finish())
+    }
+}
+
+#[get("/fetch_state/{mac_address}")]
 async fn fetch_state(
     data: web::Data<AppState>,
     path: web::Path<String>,
