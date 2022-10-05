@@ -24,22 +24,12 @@ pub struct Args {
         value_parser,
         help = "IP address of the IPMI interface"
     )]
-    pub ipmi_ip: String,   
+    pub ipmi_ip: String,
 
-    #[arg(
-        short = 'u',
-        long,
-        value_parser,
-        help = "IPMI User name"
-    )]
+    #[arg(short = 'u', long, value_parser, help = "IPMI User name")]
     pub ipmi_user: String,
 
-    #[arg(
-        short = 'p',
-        long,
-        value_parser,
-        help = "IPMI User password"
-    )]
+    #[arg(short = 'p', long, value_parser, help = "IPMI User password")]
     pub ipmi_password: String,
 
     #[arg(

@@ -1,31 +1,22 @@
-use clap::{Parser, Arg};
+use clap::Parser;
 use hypnos_library::structs::{SysState, TargetState};
 use hypnos_library::utils::{fetch_state, is_alive, query_state};
 use std::{process::exit, thread, time::Duration};
 
 mod libs;
 use libs::structs::Args;
-use libs::utils::{ipmi_start, ipmi_soft_stop};
+use libs::utils::{ipmi_soft_stop, ipmi_start};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-
     // validate arguments have been supplied correctly correctly
     let args = Args::parse();
 
     startup();
 
     // Create path to server query endpoint and health endpoint (Letting the compiler take the wheel on this one ;) )
-    let query_ep = format!(
-        "{}/query_state/{}",
-        args.server,
-        args.mac_address
-    );
-    let fetch_ep = format!(
-        "{}/fetch_state/{}",
-        args.server,
-        args.mac_address
-    );
+    let query_ep = format!("{}/query_state/{}", args.server, args.mac_address);
+    let fetch_ep = format!("{}/fetch_state/{}", args.server, args.mac_address);
     let health_ep = format!("{}/health", args.server);
 
     print!("Starting bridge...");
@@ -65,7 +56,7 @@ fn conditional_states(state: &SysState) -> bool {
     match &state.target_state {
         TargetState::IpmiOff => true,
         TargetState::IpmiOn => true,
-        _ => false
+        _ => false,
     }
 }
 
@@ -74,7 +65,10 @@ fn handle_state(state: &SysState, args: &Args) {
     match &state.target_state {
         TargetState::IpmiOff => ipmi_soft_stop(&args.ipmi_user, &args.ipmi_password, &args.ipmi_ip),
         TargetState::IpmiOn => ipmi_start(&args.ipmi_user, &args.ipmi_password, &args.ipmi_ip),
-        _ => println!("How did this happen! {:?} State should never enter the Queue!", &state.target_state),
+        _ => println!(
+            "How did this happen! {:?} State should never enter the Queue!",
+            &state.target_state
+        ),
     }
 }
 

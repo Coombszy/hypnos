@@ -15,7 +15,7 @@ pub enum TargetState {
     AgentOff,
     WolOn,
     IpmiOn,
-    IpmiOff
+    IpmiOff,
 }
 
 // System State,
