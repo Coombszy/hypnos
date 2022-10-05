@@ -1,10 +1,4 @@
 [config]
-# Scheduled states control
-# schedule_enabled: enable reading and triggering states from schedule.
-# scheduled_source: source json to read target states from.
-schedule_enabled = true
-schedule_source = "./data/schedule.json"
-
 # Web Server control
 # web_host: ip address to listen on.
 # web_port: port to listen on.

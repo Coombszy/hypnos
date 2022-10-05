@@ -13,8 +13,6 @@ pub struct TOMLData {
 // Config data stored within TOML Data
 #[derive(Deserialize, Serialize, Clone)]
 pub struct Config {
-    pub schedule_enabled: bool,
-    pub schedule_source: String,
     pub web_host: String,
     pub web_port: u16,
     pub write_logs: bool,
