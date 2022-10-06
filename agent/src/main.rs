@@ -37,7 +37,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         // If still failed, shutdown
-        if failed {exit(1)}
+        if failed {
+            exit(1)
+        }
     }
 
     loop {

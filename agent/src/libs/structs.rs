@@ -7,7 +7,13 @@ use clap::Parser;
     version
 )]
 pub struct Args {
-    #[arg(short, env = "HYPNOS_SERVER", long, value_parser, help = "Target hypnos server")]
+    #[arg(
+        short,
+        env = "HYPNOS_SERVER",
+        long,
+        value_parser,
+        help = "Target hypnos server"
+    )]
     pub server: String,
 
     #[arg(
