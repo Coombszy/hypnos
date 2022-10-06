@@ -1,6 +1,7 @@
 use clap::Parser;
 use hypnos_library::structs::{SysState, TargetState};
 use hypnos_library::utils::{fetch_state, is_alive, query_state};
+use std::io::{self, Write};
 use std::{process::exit, thread, time::Duration};
 use system_shutdown::shutdown;
 
@@ -19,11 +20,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let fetch_ep = format!("{}/fetch_state/{}", args.server, args.mac_address);
     let health_ep = format!("{}/health", args.server);
 
+    // Handle start up check and 3 retries
     print!("Starting agent...");
     if is_alive(&health_ep).await {
         println!("Running!");
     } else {
-        exit(1)
+        let mut failed = true;
+        for _ in 0..3 {
+            print!("Retrying in 30 seconds...");
+            io::stdout().flush().unwrap(); // Ensure that the stdout is written before sleeping the thread
+            thread::sleep(Duration::from_secs(30));
+            if is_alive(&health_ep).await {
+                println!("Success... Running!");
+                failed = false;
+                break;
+            }
+        }
+        // If still failed, shutdown
+        if failed {exit(1)}
     }
 
     loop {
