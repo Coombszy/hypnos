@@ -7,11 +7,12 @@ use clap::Parser;
     version
 )]
 pub struct Args {
-    #[arg(short, long, value_parser, help = "Target hypnos server")]
+    #[arg(short, env = "HYPNOS_SERVER", long, value_parser, help = "Target hypnos server")]
     pub server: String,
 
     #[arg(
         short,
+        env = "HYPNOS_MAC_ADDRESS",
         long,
         value_parser,
         help = "MAC address to consume from hypnos server"
@@ -20,6 +21,7 @@ pub struct Args {
 
     #[arg(
         short = 'w',
+        env = "HYPNOS_SLEEP",
         long,
         value_parser,
         default_value_t = 5,

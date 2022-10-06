@@ -7,11 +7,12 @@ use clap::Parser;
     version
 )]
 pub struct Args {
-    #[arg(short, long, value_parser, help = "Target hypnos server")]
+    #[arg(short, env = "HYPNOS_SERVER", long, value_parser, help = "Target hypnos server")]
     pub server: String,
 
     #[arg(
         short,
+        env = "HYPNOS_MAC_ADDRESS",
         long,
         value_parser,
         help = "MAC address to consume from hypnos server"
@@ -20,20 +21,22 @@ pub struct Args {
 
     #[arg(
         short = 't',
+        env = "HYPNOS_IPMI_IP",
         long,
         value_parser,
         help = "IP address of the IPMI interface"
     )]
     pub ipmi_ip: String,
 
-    #[arg(short = 'u', long, value_parser, help = "IPMI User name")]
+    #[arg(short = 'u', env = "HYPNOS_IPMI_USER", long, value_parser, help = "IPMI User name")]
     pub ipmi_user: String,
 
-    #[arg(short = 'p', long, value_parser, help = "IPMI User password")]
+    #[arg(short = 'p', env = "HYPNOS_IPMI_PASSWORD", long, value_parser, help = "IPMI User password")]
     pub ipmi_password: String,
 
     #[arg(
         short = 'w',
+        env = "HYPNOS_SLEEP",
         long,
         value_parser,
         default_value_t = 5,
