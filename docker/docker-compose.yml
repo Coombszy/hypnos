@@ -4,6 +4,7 @@ services:
   hypnos-server:
     container_name: hypnos-server
     image: coombszy/hypnos-server:dev
+    restart: unless-stopped
     ports:
       - 8080:8080
     volumes:
@@ -12,12 +13,12 @@ services:
   hypnos-ipmi-bridge:
     container_name: hypnos-ipmi-bridge
     image: coombszy/hypnos-ipmi-bridge:dev
+    restart: unless-stopped
     environment:
       - HYPNOS_SERVER=http://hypnos-server:8080
       - HYPNOS_MAC_ADDRESS=00:00:0A:BB:28:FC
       - HYPNOS_IPMI_IP=192.168.0.216
       - HYPNOS_IPMI_USER=root
       - HYPNOS_IPMI_PASSWORD=password
-
     depends_on:
       - hypnos-server
