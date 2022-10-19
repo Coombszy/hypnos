@@ -16,6 +16,7 @@ pub enum TargetState {
     WolOn,
     IpmiOn,
     IpmiOff,
+    SshOff,
 }
 
 // System State,

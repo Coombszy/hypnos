@@ -1,0 +1,31 @@
+FROM --platform=$BUILDPLATFORM rust:slim as build
+
+# Creates empty project, to cache dependancies
+# Highlights upstream dependancy errors
+WORKDIR /hypnos
+COPY . ./
+RUN ls -ltra /hypnos
+ARG TARGETPLATFORM
+RUN cargo fetch
+
+# Build hypnos-ssh-bridge
+RUN rm -rf ./target
+COPY ./scripts/cross-compile.sh ./cross-compile.sh
+COPY ./.cargo/config ./.cargo/config
+ARG TARGETPLATFORM
+RUN ./cross-compile.sh ${TARGETPLATFORM} hypnos-ssh-bridge
+RUN ls -ltra /hypnos/target/release
+
+# Create image
+FROM ubuntu:latest
+
+# Copy binary and sample data/config
+WORKDIR /app
+COPY --from=build /hypnos/target/release/hypnos-ssh-bridge .
+COPY ./data ./data 
+COPY ./config ./config
+RUN apt-get update && apt-get upgrade -qq && apt-get install -y ca-certificates
+RUN update-ca-certificates
+
+# Set entry to run hypnos-ssh-bridge
+CMD ["./hypnos-ssh-bridge"]

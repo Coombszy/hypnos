@@ -1,2 +1,2 @@
 [workspace]
-members = ["agent", "server", "ipmi-bridge", "libs"]
+members = ["agent", "server", "ipmi-bridge", "ssh-bridge", "libs"]

@@ -1,6 +1,6 @@
 use clap::Parser;
 use hypnos_library::structs::{SysState, TargetState};
-use hypnos_library::utils::{fetch_state, is_alive, query_state};
+use hypnos_library::utils::{get_state, is_alive};
 use std::{process::exit, thread, time::Duration};
 
 mod libs;
@@ -27,13 +27,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     loop {
-        match query_state(&query_ep).await {
+        match get_state(&query_ep).await {
             // Connection to server was successful
             Ok(r) => match r {
                 // State to ingest was found!
                 Some(state) => {
                     if conditional_states(&state) {
-                        handle_state(&fetch_state(&fetch_ep).await.unwrap().unwrap(), &args);
+                        handle_state(&get_state(&fetch_ep).await.unwrap().unwrap(), &args);
                     }
                 }
                 // No state to ingest

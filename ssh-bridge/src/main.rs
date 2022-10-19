@@ -1,12 +1,12 @@
 use clap::Parser;
 use hypnos_library::structs::{SysState, TargetState};
 use hypnos_library::utils::{get_state, is_alive};
-use std::io::{self, Write};
+use libs::utils::ssh_cmd;
 use std::{process::exit, thread, time::Duration};
-use system_shutdown::shutdown;
 
 mod libs;
 use libs::structs::Args;
+// use libs::utils::{ipmi_soft_stop, ipmi_start};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -20,26 +20,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let fetch_ep = format!("{}/fetch_state/{}", args.server, args.mac_address);
     let health_ep = format!("{}/health", args.server);
 
-    // Handle start up check and 3 retries
-    print!("Starting agent...");
+    print!("Starting bridge...");
     if is_alive(&health_ep).await {
         println!("Running!");
     } else {
-        let mut failed = true;
-        for _ in 0..3 {
-            print!("Retrying in 30 seconds...");
-            io::stdout().flush().unwrap(); // Ensure that the stdout is written before sleeping the thread
-            thread::sleep(Duration::from_secs(30));
-            if is_alive(&health_ep).await {
-                println!("Success... Running!");
-                failed = false;
-                break;
-            }
-        }
-        // If still failed, shutdown
-        if failed {
-            exit(1)
-        }
+        exit(1)
     }
 
     loop {
@@ -48,9 +33,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(r) => match r {
                 // State to ingest was found!
                 Some(state) => {
-                    // If not in the list of states that should be ingested, do nothing
                     if conditional_states(&state) {
-                        handle_state(&get_state(&fetch_ep).await.unwrap().unwrap());
+                        handle_state(&get_state(&query_ep).await.unwrap().unwrap(), &args);
                     }
                 }
                 // No state to ingest
@@ -71,15 +55,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 // Whether or not this app should handle this state
 fn conditional_states(state: &SysState) -> bool {
     match &state.target_state {
-        TargetState::AgentOff => true,
+        TargetState::SshOff => true,
         _ => false,
     }
 }
 
 // Handle State changes, All new states must be implemented here in the future
-fn handle_state(state: &SysState) {
+fn handle_state(state: &SysState, args: &Args) {
     match &state.target_state {
-        TargetState::AgentOff => shutdown().unwrap(),
+        TargetState::SshOff => {
+            ssh_cmd(&args.ssh_ip, &args.ssh_user, &args.ssh_password, &"echo aaaa >> hypnos-test".to_string()).unwrap();
+            println!("SSH OFF NOW! {:?}", args)
+        },
         _ => println!(
             "How did this happen! {:?} State should never enter the Queue!",
             &state.target_state
@@ -88,19 +75,6 @@ fn handle_state(state: &SysState) {
 }
 
 fn startup() {
-    // Permissions check and attempt to escalate
-    if sudo::check() != sudo::RunningAs::Root {
-        println!("Hypnos agent needs to be running as root to control the machine power state. Attempting to escalate...");
-        let escalate_result = sudo::escalate_if_needed();
-        match escalate_result {
-            Ok(_) => (),
-            Err(_) => {
-                println!("Failed to escalate");
-                exit(1);
-            }
-        }
-    }
-
     println!(
         "{} ({}) By {}",
         env!("CARGO_PKG_NAME"),
