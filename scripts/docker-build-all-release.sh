@@ -22,3 +22,7 @@ docker buildx build --push \
 docker buildx build --push \
 -f docker/Dockerfile-ipmi-bridge --platform linux/amd64,linux/arm/v7 --tag coombszy/hypnos-ipmi-bridge:release --tag coombszy/hypnos-ipmi-bridge:latest \
 --tag coombszy/hypnos-ipmi-bridge:1.0.0 .
+
+docker buildx build --push \
+-f docker/Dockerfile-ssh-bridge --platform linux/amd64,linux/arm/v7 --tag coombszy/hypnos-ssh-bridge:release --tag coombszy/hypnos-ssh-bridge:latest \
+--tag coombszy/hypnos-ssh-bridge:1.0.0 .
