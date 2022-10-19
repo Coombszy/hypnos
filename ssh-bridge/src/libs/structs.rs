@@ -53,6 +53,15 @@ pub struct Args {
     pub ssh_password: String,
 
     #[arg(
+        short = 'e',
+        long,
+        value_parser,
+        default_value_t = false,
+        help = "Attempt to run state change via sudo"
+    )]
+    pub ssh_elevate: bool,
+
+    #[arg(
         short = 'w',
         env = "HYPNOS_SLEEP",
         long,

@@ -1,7 +1,7 @@
 use clap::Parser;
 use hypnos_library::structs::{SysState, TargetState};
 use hypnos_library::utils::{get_state, is_alive};
-use libs::utils::ssh_cmd;
+use libs::utils::ssh_stop;
 use std::{process::exit, thread, time::Duration};
 
 mod libs;
@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 // State to ingest was found!
                 Some(state) => {
                     if conditional_states(&state) {
-                        handle_state(&get_state(&query_ep).await.unwrap().unwrap(), &args);
+                        handle_state(&get_state(&fetch_ep).await.unwrap().unwrap(), &args).await;
                     }
                 }
                 // No state to ingest
@@ -61,11 +61,10 @@ fn conditional_states(state: &SysState) -> bool {
 }
 
 // Handle State changes, All new states must be implemented here in the future
-fn handle_state(state: &SysState, args: &Args) {
+async fn handle_state(state: &SysState, args: &Args) {
     match &state.target_state {
         TargetState::SshOff => {
-            ssh_cmd(&args.ssh_ip, &args.ssh_user, &args.ssh_password, &"echo aaaa >> hypnos-test".to_string()).unwrap();
-            println!("SSH OFF NOW! {:?}", args)
+            ssh_stop(&args.ssh_ip, &args.ssh_user, &args.ssh_password, &args.ssh_elevate).await;
         },
         _ => println!(
             "How did this happen! {:?} State should never enter the Queue!",
