@@ -19,11 +19,9 @@ RUN ls -ltra /hypnos/target/release
 # Create image
 FROM ubuntu:latest
 
-# Copy binary and sample data/config
+# Copy binary 
 WORKDIR /app
 COPY --from=build /hypnos/target/release/hypnos-ipmi-bridge .
-COPY ./data ./data 
-COPY ./config ./config
 RUN apt-get update && apt-get upgrade -qq && apt-get install -y ca-certificates ipmitool
 RUN update-ca-certificates
 

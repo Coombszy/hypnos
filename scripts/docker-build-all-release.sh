@@ -16,13 +16,13 @@ docker buildx use builder
 
 # Run builds
 docker buildx build --push \
--f docker/Dockerfile-server --platform linux/amd64,linux/arm/v7 --tag coombszy/hypnos-server:release --tag coombszy/hypnos-server:latest \
+-f docker/Dockerfile-server --platform linux/amd64,linux/arm64 --tag coombszy/hypnos-server:release --tag coombszy/hypnos-server:latest \
 --tag coombszy/hypnos-server:1.0.0 .
 
 docker buildx build --push \
--f docker/Dockerfile-ipmi-bridge --platform linux/amd64,linux/arm/v7 --tag coombszy/hypnos-ipmi-bridge:release --tag coombszy/hypnos-ipmi-bridge:latest \
+-f docker/Dockerfile-ipmi-bridge --platform linux/amd64,linux/arm64 --tag coombszy/hypnos-ipmi-bridge:release --tag coombszy/hypnos-ipmi-bridge:latest \
 --tag coombszy/hypnos-ipmi-bridge:1.0.0 .
 
 docker buildx build --push \
--f docker/Dockerfile-ssh-bridge --platform linux/amd64,linux/arm/v7 --tag coombszy/hypnos-ssh-bridge:release --tag coombszy/hypnos-ssh-bridge:latest \
+-f docker/Dockerfile-ssh-bridge --platform linux/amd64,linux/arm64 --tag coombszy/hypnos-ssh-bridge:release --tag coombszy/hypnos-ssh-bridge:latest \
 --tag coombszy/hypnos-ssh-bridge:1.0.0 .
