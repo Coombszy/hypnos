@@ -17,6 +17,7 @@ pub struct Config {
     pub web_port: u16,
     pub write_logs: bool,
     pub write_logs_file: String,
+    pub api_keys: String
 }
 
 // Implement functionality for Config struct
